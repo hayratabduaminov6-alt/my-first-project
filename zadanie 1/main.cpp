@@ -3,6 +3,7 @@
 #include <numeric>
 #include <algorithm>
 #include <random>
+#include <chrono>
 #include <climits>
 
 using namespace std;
@@ -14,7 +15,7 @@ vector<vector<int>> generateMatrix(int n, int minCost, int maxCost, mt19937_64& 
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
             if (i == j) {
-                matrix[i][j] = 0; // Путь в самого себя равен 0
+                matrix[i][j] = 0;
             }
             else {
                 matrix[i][j] = dist(gen);
@@ -24,13 +25,14 @@ vector<vector<int>> generateMatrix(int n, int minCost, int maxCost, mt19937_64& 
     return matrix;
 }
 
-// Структура для сохранения результатов
+// Структура результатов точного алгоритма
 struct ExactResult {
     int minCost = INT_MAX;
     int maxCost = INT_MIN;
+    double timeMs = 0.0;
 };
 
-// Точное решение задачи коммивояжера (Полный перебор)
+// Точный алгоритм (Полный перебор) с замером времени
 ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
     int n = matrix.size();
     vector<int> cities;
@@ -38,9 +40,9 @@ ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
         if (i != startCity) cities.push_back(i);
     }
 
+    auto t1 = chrono::high_resolution_clock::now();
     ExactResult res;
 
-    // Перебор всех перестановок
     do {
         int currentCost = 0;
         int currentCity = startCity;
@@ -56,6 +58,53 @@ ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
 
     } while (next_permutation(cities.begin(), cities.end()));
 
+    auto t2 = chrono::high_resolution_clock::now();
+    res.timeMs = chrono::duration<double, milli>(t2 - t1).count();
+
+    return res;
+}
+
+// Результаты эвристики
+struct HeuristicResult {
+    int cost = 0;
+    double timeMs = 0.0;
+};
+
+// Эвристический алгоритм (Метод ближайшего соседа)
+HeuristicResult solveNearestNeighbor(const vector<vector<int>>& matrix, int startCity) {
+    int n = matrix.size();
+    vector<bool> visited(n, false);
+
+    auto t1 = chrono::high_resolution_clock::now();
+
+    int current = startCity;
+    visited[current] = true;
+    int totalCost = 0;
+
+    for (int step = 0; step < n - 1; ++step) {
+        int nearest = -1;
+        int minEdge = INT_MAX;
+
+        for (int next = 0; next < n; ++next) {
+            if (!visited[next] && matrix[current][next] < minEdge) {
+                minEdge = matrix[current][next];
+                nearest = next;
+            }
+        }
+
+        visited[nearest] = true;
+        totalCost += minEdge;
+        current = nearest;
+    }
+
+    totalCost += matrix[current][startCity];
+
+    auto t2 = chrono::high_resolution_clock::now();
+
+    HeuristicResult res;
+    res.cost = totalCost;
+    res.timeMs = chrono::duration<double, milli>(t2 - t1).count();
+
     return res;
 }
 
@@ -63,12 +112,14 @@ int main() {
     random_device rd;
     mt19937_64 gen(rd());
 
-    int n = 4;
+    int n = 6;
     auto matrix = generateMatrix(n, 10, 100, gen);
-    ExactResult res = solveExact(matrix, 0);
 
-    cout << "Точное наилучшее: " << res.minCost << endl;
-    cout << "Точное наихудшее: " << res.maxCost << endl;
+    ExactResult exact = solveExact(matrix, 0);
+    HeuristicResult heur = solveNearestNeighbor(matrix, 0);
+
+    cout << "Точный (наилучший): " << exact.minCost << " | Время: " << exact.timeMs << " ms" << endl;
+    cout << "Эвристика (ближайший сосед): " << heur.cost << " | Время: " << heur.timeMs << " ms" << endl;
 
     return 0;
 }
