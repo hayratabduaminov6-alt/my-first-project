@@ -5,6 +5,7 @@
 #include <random>
 #include <chrono>
 #include <climits>
+#include <iomanip>
 
 using namespace std;
 
@@ -14,25 +15,20 @@ vector<vector<int>> generateMatrix(int n, int minCost, int maxCost, mt19937_64& 
     vector<vector<int>> matrix(n, vector<int>(n, 0));
     for (int i = 0; i < n; ++i) {
         for (int j = 0; j < n; ++j) {
-            if (i == j) {
-                matrix[i][j] = 0;
-            }
-            else {
-                matrix[i][j] = dist(gen);
-            }
+            if (i == j) matrix[i][j] = 0;
+            else matrix[i][j] = dist(gen);
         }
     }
     return matrix;
 }
 
-// Структура результатов точного алгоритма
+// Результаты точного метода
 struct ExactResult {
     int minCost = INT_MAX;
     int maxCost = INT_MIN;
     double timeMs = 0.0;
 };
 
-// Точный алгоритм (Полный перебор) с замером времени
 ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
     int n = matrix.size();
     vector<int> cities;
@@ -70,7 +66,6 @@ struct HeuristicResult {
     double timeMs = 0.0;
 };
 
-// Эвристический алгоритм (Метод ближайшего соседа)
 HeuristicResult solveNearestNeighbor(const vector<vector<int>>& matrix, int startCity) {
     int n = matrix.size();
     vector<bool> visited(n, false);
@@ -112,14 +107,42 @@ int main() {
     random_device rd;
     mt19937_64 gen(rd());
 
-    int n = 6;
-    auto matrix = generateMatrix(n, 10, 100, gen);
+    vector<int> sizes = { 4, 6, 8, 10 }; // Разные размерности
+    int runsPerSize = 3;               // По 3 запуска на каждую размерность
+    int minCost = 10, maxCost = 100;
+    int startCity = 0;
 
-    ExactResult exact = solveExact(matrix, 0);
-    HeuristicResult heur = solveNearestNeighbor(matrix, 0);
+    cout << fixed << setprecision(3);
+    cout << "=================== ЭКСПЕРИМЕНТЫ TSP ===================" << endl;
 
-    cout << "Точный (наилучший): " << exact.minCost << " | Время: " << exact.timeMs << " ms" << endl;
-    cout << "Эвристика (ближайший сосед): " << heur.cost << " | Время: " << heur.timeMs << " ms" << endl;
+    for (int n : sizes) {
+        cout << "\n--------------------------------------------------" << endl;
+        cout << "Размерность матрицы: " << n << "x" << n << " (Разброс стоимостей: " << minCost << "-" << maxCost << ")" << endl;
+        cout << "--------------------------------------------------" << endl;
+
+        for (int run = 1; run <= runsPerSize; ++run) {
+            auto matrix = generateMatrix(n, minCost, maxCost, gen);
+
+            ExactResult exact = solveExact(matrix, startCity);
+            HeuristicResult heur = solveNearestNeighbor(matrix, startCity);
+
+            // Формула качества: 100% - лучшее решение, 0% - худшее
+            double quality = 0.0;
+            if (exact.maxCost != exact.minCost) {
+                quality = 100.0 * (exact.maxCost - heur.cost) / (exact.maxCost - exact.minCost);
+            }
+            else {
+                quality = 100.0;
+            }
+
+            cout << "Запуск #" << run << ":" << endl;
+            cout << "  [Точный]     Мин: " << exact.minCost << " | Макс: " << exact.maxCost
+                << " | Время: " << exact.timeMs << " ms" << endl;
+            cout << "  [Эвристика]  Стоимость: " << heur.cost
+                << " | Время: " << heur.timeMs << " ms" << endl;
+            cout << "  [Качество]:  " << quality << "%" << endl;
+        }
+    }
 
     return 0;
 }
