@@ -22,6 +22,23 @@ vector<vector<int>> generateMatrix(int n, int minCost, int maxCost, mt19937_64& 
     return matrix;
 }
 
+// Алгоритм Дейкстры 
+bool next_permutation(vector<int>& p) {
+    int n = p.size();
+    int i = n - 2;
+    while (i >= 0 && p[i] >= p[i + 1]) {
+        i--;
+    }
+    if (i < 0) return false;
+    int j = n - 1;
+    while (p[i] >= p[j]) {
+        j--;
+    }
+    swap(p[i], p[j]);
+    reverse(p.begin() + i + 1, p.end());
+    return true;
+}
+
 // Результаты точного метода
 struct ExactResult {
     int minCost = INT_MAX;
@@ -35,6 +52,8 @@ ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
     for (int i = 0; i < n; ++i) {
         if (i != startCity) cities.push_back(i);
     }
+
+    sort(cities.begin(), cities.end());
 
     auto t1 = chrono::high_resolution_clock::now();
     ExactResult res;
@@ -52,7 +71,7 @@ ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
         res.minCost = min(res.minCost, currentCost);
         res.maxCost = max(res.maxCost, currentCost);
 
-    } while (next_permutation(cities.begin(), cities.end()));
+    } while (next_permutation(cities));
 
     auto t2 = chrono::high_resolution_clock::now();
     res.timeMs = chrono::duration<double, milli>(t2 - t1).count();
@@ -136,11 +155,11 @@ int main() {
             }
 
             cout << "Запуск #" << run << ":" << endl;
-            cout << "  [Точный]     Мин: " << exact.minCost << " | Макс: " << exact.maxCost
+            cout << "  [Точный   ]  Мин: " << exact.minCost << " | Макс: " << exact.maxCost
                 << " | Время: " << exact.timeMs << " ms" << endl;
             cout << "  [Эвристика]  Стоимость: " << heur.cost
                 << " | Время: " << heur.timeMs << " ms" << endl;
-            cout << "  [Качество]:  " << quality << "%" << endl;
+            cout << "  [Качество ]: " << quality << "%" << endl;
         }
     }
 
