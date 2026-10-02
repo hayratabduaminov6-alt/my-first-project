@@ -21,21 +21,31 @@ vector<vector<int>> generateMatrix(int n, int minCost, int maxCost, mt19937_64& 
     }
     return matrix;
 }
-
 // Алгоритм Дейкстры 
-bool next_permutation(vector<int>& p) {
-    int n = p.size();
+
+bool next_permutation(int* p, int n) {
     int i = n - 2;
     while (i >= 0 && p[i] >= p[i + 1]) {
         i--;
     }
     if (i < 0) return false;
+
     int j = n - 1;
     while (p[i] >= p[j]) {
         j--;
     }
-    swap(p[i], p[j]);
-    reverse(p.begin() + i + 1, p.end());
+
+    std::swap(p[i], p[j]);
+
+  
+    int left = i + 1;
+    int right = n - 1;
+    while (left < right) {
+        std::swap(p[left], p[right]);
+        left++;
+        right--;
+    }
+
     return true;
 }
 
@@ -48,12 +58,19 @@ struct ExactResult {
 
 ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
     int n = matrix.size();
-    vector<int> cities;
+    vector<int> citiesVec;
     for (int i = 0; i < n; ++i) {
-        if (i != startCity) cities.push_back(i);
+        if (i != startCity) citiesVec.push_back(i);
     }
 
-    sort(cities.begin(), cities.end());
+    sort(citiesVec.begin(), citiesVec.end());
+
+    // Копируем в обычный массив для использования собственной функции next_permutation
+    int m = citiesVec.size();
+    int* cities = new int[m];
+    for (int i = 0; i < m; ++i) {
+        cities[i] = citiesVec[i];
+    }
 
     auto t1 = chrono::high_resolution_clock::now();
     ExactResult res;
@@ -62,7 +79,8 @@ ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
         int currentCost = 0;
         int currentCity = startCity;
 
-        for (int nextCity : cities) {
+        for (int i = 0; i < m; ++i) {
+            int nextCity = cities[i];
             currentCost += matrix[currentCity][nextCity];
             currentCity = nextCity;
         }
@@ -71,11 +89,12 @@ ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
         res.minCost = min(res.minCost, currentCost);
         res.maxCost = max(res.maxCost, currentCost);
 
-    } while (next_permutation(cities));
+    } while (next_permutation(cities, m));
 
     auto t2 = chrono::high_resolution_clock::now();
     res.timeMs = chrono::duration<double, milli>(t2 - t1).count();
 
+    delete[] cities;
     return res;
 }
 
