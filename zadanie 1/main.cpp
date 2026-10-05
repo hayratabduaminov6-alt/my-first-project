@@ -9,6 +9,7 @@
 
 using namespace std;
 
+
 // Функция для заполнения матрицы случайными значениями
 vector<vector<int>> generateMatrix(int n, int minCost, int maxCost, mt19937_64& gen) {
     uniform_int_distribution<int> dist(minCost, maxCost);
@@ -21,9 +22,10 @@ vector<vector<int>> generateMatrix(int n, int minCost, int maxCost, mt19937_64& 
     }
     return matrix;
 }
-// Алгоритм Дейкстры 
 
-bool next_permutation(int* p, int n) {
+
+// Алгоритм Дейкстры 
+bool next_permutation_silent(int* p, int n) {
     int i = n - 2;
     while (i >= 0 && p[i] >= p[i + 1]) {
         i--;
@@ -37,7 +39,6 @@ bool next_permutation(int* p, int n) {
 
     std::swap(p[i], p[j]);
 
-  
     int left = i + 1;
     int right = n - 1;
     while (left < right) {
@@ -49,7 +50,54 @@ bool next_permutation(int* p, int n) {
     return true;
 }
 
+// Алгоритм   Алгоритм Дейкстры — решение после замены и инвертирования хвоста
+bool next_permutation_verbose(int* p, int n) {
+    int i = n - 2;
+    while (i >= 0 && p[i] >= p[i + 1]) {
+        i--;
+    }
+    if (i < 0) return false;
+
+    int j = n - 1;
+    while (p[i] >= p[j]) {
+        j--;
+    }
+
+
+    cout << "1. i = " << i + 1 << endl;
+
+
+    cout << "2. j = " << j + 1 << endl;
+
+
+    std::swap(p[i], p[j]);
+    cout << "3. P = (";
+    for (int k = 0; k < n; ++k) {
+        cout << p[k];
+        if (k < n - 1) cout << ", ";
+    }
+    cout << ")" << endl;
+
+
+    int left = i + 1;
+    int right = n - 1;
+    while (left < right) {
+        std::swap(p[left], p[right]);
+        left++;
+        right--;
+    }
+    cout << "4. P = (";
+    for (int k = 0; k < n; ++k) {
+        cout << p[k];
+        if (k < n - 1) cout << ", ";
+    }
+    cout << ")" << endl;
+
+    return true;
+}
+
 // Результаты точного метода
+
 struct ExactResult {
     int minCost = INT_MAX;
     int maxCost = INT_MIN;
@@ -65,7 +113,6 @@ ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
 
     sort(citiesVec.begin(), citiesVec.end());
 
-    // Копируем в обычный массив для использования собственной функции next_permutation
     int m = citiesVec.size();
     int* cities = new int[m];
     for (int i = 0; i < m; ++i) {
@@ -89,7 +136,7 @@ ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
         res.minCost = min(res.minCost, currentCost);
         res.maxCost = max(res.maxCost, currentCost);
 
-    } while (next_permutation(cities, m));
+    } while (next_permutation_silent(cities, m));
 
     auto t2 = chrono::high_resolution_clock::now();
     res.timeMs = chrono::duration<double, milli>(t2 - t1).count();
@@ -99,6 +146,7 @@ ExactResult solveExact(const vector<vector<int>>& matrix, int startCity) {
 }
 
 // Результаты эвристики
+
 struct HeuristicResult {
     int cost = 0;
     double timeMs = 0.0;
@@ -141,12 +189,46 @@ HeuristicResult solveNearestNeighbor(const vector<vector<int>>& matrix, int star
     return res;
 }
 
+
+// массив после замены и после инвертирования хвоста 
+void demonstrateNextPermutation() {
+    cout << "\nАлгоритм Дейкстры" << endl;
+
+
+    int p[] = { 6, 5, 4, 2, 3, 1 };
+    int n = sizeof(p) / sizeof(p[0]);
+
+    cout << "Исходная перестановка: P = (";
+    for (int k = 0; k < n; ++k) {
+        cout << p[k];
+        if (k < n - 1) cout << ", ";
+    }
+    cout << ")\n" << endl;
+
+    // Однократное применение next_permutation с выводом шагов
+    if (next_permutation_verbose(p, n)) {
+        cout << "\nСледующая перестановка: P = (";
+        for (int k = 0; k < n; ++k) {
+            cout << p[k];
+            if (k < n - 1) cout << ", ";
+        }
+        cout << ")" << endl;
+    }
+    else {
+        cout << "Это была последняя перестановка." << endl;
+    }
+
+    cout << "=====================================================================" << endl;
+}
+
+
+
 int main() {
     random_device rd;
     mt19937_64 gen(rd());
 
-    vector<int> sizes = { 4, 6, 8, 10 }; // Разные размерности
-    int runsPerSize = 3;               // По 3 запуска на каждую размерность
+    vector<int> sizes = { 4, 6, 8, 10 };
+    int runsPerSize = 3;
     int minCost = 10, maxCost = 100;
     int startCity = 0;
 
@@ -155,7 +237,8 @@ int main() {
 
     for (int n : sizes) {
         cout << "\n--------------------------------------------------" << endl;
-        cout << "Размерность матрицы: " << n << "x" << n << " (Разброс стоимостей: " << minCost << "-" << maxCost << ")" << endl;
+        cout << "Размерность матрицы: " << n << "x" << n
+            << " (Разброс стоимостей: " << minCost << "-" << maxCost << ")" << endl;
         cout << "--------------------------------------------------" << endl;
 
         for (int run = 1; run <= runsPerSize; ++run) {
@@ -164,7 +247,6 @@ int main() {
             ExactResult exact = solveExact(matrix, startCity);
             HeuristicResult heur = solveNearestNeighbor(matrix, startCity);
 
-            // Формула качества: 100% - лучшее решение, 0% - худшее
             double quality = 0.0;
             if (exact.maxCost != exact.minCost) {
                 quality = 100.0 * (exact.maxCost - heur.cost) / (exact.maxCost - exact.minCost);
@@ -181,6 +263,9 @@ int main() {
             cout << "  [Качество ]: " << quality << "%" << endl;
         }
     }
+
+
+    demonstrateNextPermutation();
 
     return 0;
 }
