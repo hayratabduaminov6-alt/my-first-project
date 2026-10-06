@@ -50,51 +50,7 @@ bool next_permutation_silent(int* p, int n) {
     return true;
 }
 
-// Алгоритм   Алгоритм Дейкстры — решение после замены и инвертирования хвоста
-bool next_permutation_verbose(int* p, int n) {
-    int i = n - 2;
-    while (i >= 0 && p[i] >= p[i + 1]) {
-        i--;
-    }
-    if (i < 0) return false;
 
-    int j = n - 1;
-    while (p[i] >= p[j]) {
-        j--;
-    }
-
-
-    cout << "1. i = " << i + 1 << endl;
-
-
-    cout << "2. j = " << j + 1 << endl;
-
-
-    std::swap(p[i], p[j]);
-    cout << "3. P = (";
-    for (int k = 0; k < n; ++k) {
-        cout << p[k];
-        if (k < n - 1) cout << ", ";
-    }
-    cout << ")" << endl;
-
-
-    int left = i + 1;
-    int right = n - 1;
-    while (left < right) {
-        std::swap(p[left], p[right]);
-        left++;
-        right--;
-    }
-    cout << "4. P = (";
-    for (int k = 0; k < n; ++k) {
-        cout << p[k];
-        if (k < n - 1) cout << ", ";
-    }
-    cout << ")" << endl;
-
-    return true;
-}
 
 // Результаты точного метода
 
@@ -206,7 +162,7 @@ void demonstrateNextPermutation() {
     cout << ")\n" << endl;
 
     // Однократное применение next_permutation с выводом шагов
-    if (next_permutation_verbose(p, n)) {
+    if (next_permutation_silent(p, n)) {
         cout << "\nСледующая перестановка: P = (";
         for (int k = 0; k < n; ++k) {
             cout << p[k];
