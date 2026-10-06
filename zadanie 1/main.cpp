@@ -161,7 +161,7 @@ void demonstrateNextPermutation() {
     }
     cout << ")\n" << endl;
 
-    // Однократное применение next_permutation с выводом шагов
+   
     if (next_permutation_silent(p, n)) {
         cout << "\nСледующая перестановка: P = (";
         for (int k = 0; k < n; ++k) {
