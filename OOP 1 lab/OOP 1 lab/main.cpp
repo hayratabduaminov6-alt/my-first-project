@@ -35,6 +35,7 @@ public:
     double sideLength() const {
         return sqrt((base / 2) * (base / 2) + height * height);
     }
+    
 
     // 4) Проверка равносторонности
     bool isEquilateral() const {
@@ -91,7 +92,11 @@ public:
             << "основание = " << t.base << ", высота = " << t.height;
         return out;
     }
+
+
+   
 };
+
 
 int main() {
 
@@ -137,5 +142,22 @@ int main() {
     // ===== 10) ДЛИНЫ БОКОВЫХ СТОРОН =====
     cout << "10) Боковая сторона t2 = " << t2.sideLength() << endl;
 
+  
+        
+   
+
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
