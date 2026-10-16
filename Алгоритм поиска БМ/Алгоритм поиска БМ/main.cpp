@@ -1,11 +1,11 @@
-#define NOMINMAX            
+#define NOMINMAX
 #include <windows.h>
 #include <iostream>
 #include <string>
 #include <limits>
 #include "BoyerMoore.h"
 
-// ---------- Вспомогательные функции ввода ----------
+
 static int readInt(const std::string& prompt) {
     int value;
     while (true) {

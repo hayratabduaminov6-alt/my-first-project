@@ -1,4 +1,3 @@
-
 #ifndef BOYER_MOORE_H
 #define BOYER_MOORE_H
 
@@ -22,12 +21,9 @@ private:
     std::string pattern_;
     int m_;
     int badChar_[256];
-    std::vector<int> goodSuffix_;
 
     void buildBadChar();
-    void buildGoodSuffix();
     int badCharShift(char c, int j) const;
-    int goodSuffixShift(int j) const;
 };
 
-#endif 
+#endif
