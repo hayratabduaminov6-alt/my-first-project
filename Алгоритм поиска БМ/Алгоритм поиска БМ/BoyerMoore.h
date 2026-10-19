@@ -8,13 +8,12 @@ class BoyerMoore {
 public:
     explicit BoyerMoore(const std::string& pattern);
 
-    // 1. Индекс первого вхождения или -1
+    
     int findFirst(const std::string& text) const;
 
-    // 2. Все вхождения
+   
     std::vector<int> findAll(const std::string& text) const;
-
-    // 3. Вхождения в диапазоне [from, to] текста
+ // 3. Вхождения в диапазоне [from, to] текста
     std::vector<int> findInRange(const std::string& text, int from, int to) const;
 
 private:

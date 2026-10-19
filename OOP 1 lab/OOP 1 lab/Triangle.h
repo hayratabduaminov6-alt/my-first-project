@@ -51,4 +51,14 @@ public:
     // 2) Ввод/вывод
     friend std::istream& operator>>(std::istream& in, Triangle& t);
     friend std::ostream& operator<<(std::ostream& out, const Triangle& t);
+
+
+    // 11) Высота, опущенная на боковую сторону
+    double heightToSide() const;
+
+    // 12) Пересечение с прямой Ax + By + C = 0
+    bool intersectsLine(double A, double B, double C) const;
+
+
+
 };

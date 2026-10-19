@@ -5,7 +5,6 @@
 #include <limits>
 #include "BoyerMoore.h"
 
-
 static int readInt(const std::string& prompt) {
     int value;
     while (true) {
@@ -26,6 +25,8 @@ static std::string readLine(const std::string& prompt) {
     std::getline(std::cin, s);
     return s;
 }
+
+    
 
 int main() {
     SetConsoleCP(1251);

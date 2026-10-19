@@ -83,3 +83,42 @@ ostream& operator<<(ostream& out, const Triangle& t) {
         << "основание = " << t.base << ", высота = " << t.height;
     return out;
 }
+
+// 11) Высота, опущенная на боковую сторону
+
+double Triangle::heightToSide() const {
+    double side = sideLength();
+    if (side < 1e-12) return 0.0;   // вырожденный случай
+    return base * height / side;
+}
+
+// 12) Пересечение с прямой Ax + By + C = 0
+
+bool Triangle::intersectsLine(double A, double B, double C) const {
+    const double eps = 1e-9;
+
+    auto f = [&](double px, double py) { return A * px + B * py + C; };
+
+    double xt = x + base / 2.0, yt = y;
+    double xl = x, yl = y + height;
+    double xr = x + base, yr = y + height;
+
+    // Проверка пересечения отрезка (p1,p2) с прямой
+    auto segIntersects = [&](double x1, double y1, double x2, double y2) -> bool {
+        double f1 = f(x1, y1);
+        double f2 = f(x2, y2);
+
+        // Оба конца на прямой — отрезок лежит на прямой (пересечение)
+        if (fabs(f1) < eps && fabs(f2) < eps) return true;
+
+        // Один конец на прямой — пересечение
+        if (fabs(f1) < eps || fabs(f2) < eps) return true;
+
+        // Разные знаки — пересечение
+        return (f1 > 0) != (f2 > 0);
+        };
+
+    return segIntersects(xt, yt, xl, yl) ||   // боковая левая
+        segIntersects(xt, yt, xr, yr) ||   // боковая правая
+        segIntersects(xl, yl, xr, yr);     // основание
+}
