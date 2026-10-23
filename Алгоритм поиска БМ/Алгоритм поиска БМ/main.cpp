@@ -10,12 +10,13 @@ static int readInt(const std::string& prompt) {
     while (true) {
         std::cout << prompt;
         if (std::cin >> value) {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); 
             return value;
         }
+
         std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Ошибка: введите целое число.\n";
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');     
+        std::cout << "ОШибка.'\n'";                                            
     }
 }
 
@@ -25,6 +26,8 @@ static std::string readLine(const std::string& prompt) {
     std::getline(std::cin, s);
     return s;
 }
+
+    
 
     
 

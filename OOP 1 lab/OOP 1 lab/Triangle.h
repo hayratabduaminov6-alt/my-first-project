@@ -10,6 +10,7 @@ private:
     double height;    // высота
 
 public:
+   
     // 1) Конструктор по умолчанию
     Triangle();
 
@@ -48,10 +49,8 @@ public:
     // 9) Подобие как операция ==
     bool operator==(const Triangle& other) const;
 
-    // 2) Ввод/вывод
-    friend std::istream& operator>>(std::istream& in, Triangle& t);
-    friend std::ostream& operator<<(std::ostream& out, const Triangle& t);
-
+  
+    
 
     // 11) Высота, опущенная на боковую сторону
     double heightToSide() const;
@@ -62,3 +61,6 @@ public:
 
 
 };
+// 2) Ввод/вывод
+std::istream& operator>>(std::istream& in, Triangle& t);
+std::ostream& operator<<(std::ostream& out, const Triangle& t);

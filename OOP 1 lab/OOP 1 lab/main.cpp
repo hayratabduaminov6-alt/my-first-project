@@ -9,11 +9,14 @@ using namespace std;
 
 int main() {
 
-
     // ===== 1) КОНСТРУКТОРЫ =====
     cout << "1) Конструктор по умолчанию: ";
     Triangle t1;
     cout << t1 << endl;
+
+    
+
+
 
     cout << "1) Конструктор с аргументами: ";
     Triangle t2(0, 0, 4, 3);

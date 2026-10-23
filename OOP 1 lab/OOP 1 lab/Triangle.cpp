@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include "Triangle.h"
 #include <cmath>
+#include <iostream>
 
 using namespace std;
 
@@ -68,24 +69,7 @@ bool Triangle::operator==(const Triangle& other) const {
     return fabs(base / height - other.base / other.height) < 1e-9;
 }
 
-// 2) Ввод
-istream& operator>>(istream& in, Triangle& t) {
-    cout << "Введите x, y (левый верхний угол): ";
-    in >> t.x >> t.y;
-    cout << "Введите основание и высоту: ";
-    in >> t.base >> t.height;
-    return in;
-}
-
-// 2) Вывод
-ostream& operator<<(ostream& out, const Triangle& t) {
-    out << "Треугольник: A(" << t.x << ", " << t.y << "), "
-        << "основание = " << t.base << ", высота = " << t.height;
-    return out;
-}
-
 // 11) Высота, опущенная на боковую сторону
-
 double Triangle::heightToSide() const {
     double side = sideLength();
     if (side < 1e-12) return 0.0;   // вырожденный случай
@@ -93,7 +77,6 @@ double Triangle::heightToSide() const {
 }
 
 // 12) Пересечение с прямой Ax + By + C = 0
-
 bool Triangle::intersectsLine(double A, double B, double C) const {
     const double eps = 1e-9;
 
@@ -108,17 +91,36 @@ bool Triangle::intersectsLine(double A, double B, double C) const {
         double f1 = f(x1, y1);
         double f2 = f(x2, y2);
 
-        // Оба конца на прямой — отрезок лежит на прямой (пересечение)
         if (fabs(f1) < eps && fabs(f2) < eps) return true;
-
-        // Один конец на прямой — пересечение
         if (fabs(f1) < eps || fabs(f2) < eps) return true;
-
-        // Разные знаки — пересечение
         return (f1 > 0) != (f2 > 0);
         };
 
-    return segIntersects(xt, yt, xl, yl) ||   // боковая левая
-        segIntersects(xt, yt, xr, yr) ||   // боковая правая
-        segIntersects(xl, yl, xr, yr);     // основание
+    return segIntersects(xt, yt, xl, yl) ||
+        segIntersects(xt, yt, xr, yr) ||
+        segIntersects(xl, yl, xr, yr);
 }
+
+// 2) Ввод 
+istream& operator>>(istream& in, Triangle& t) {
+    double x, y, b, h;
+    cout << "Введите x, y (левый верхний угол): ";
+    in >> x >> y;
+    cout << "Введите основание и высоту: ";
+    in >> b >> h;
+
+    t.setX(x);
+    t.setY(y);
+    t.setBase(b);
+    t.setHeight(h);
+
+    return in;
+}
+
+// 2) Вывод 
+ostream& operator<<(ostream& out, const Triangle& t) {
+    out << "Треугольник: A(" << t.getX() << ", " << t.getY() << "), "
+        << "основание = " << t.getBase() << ", высота = " << t.getHeight();
+    return out;
+}
+
