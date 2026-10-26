@@ -9,6 +9,12 @@ using namespace std;
 
 int main() {
 
+
+
+
+
+
+
     // ===== 1) КОНСТРУКТОРЫ =====
     cout << "1) Конструктор по умолчанию: ";
     Triangle t1;
