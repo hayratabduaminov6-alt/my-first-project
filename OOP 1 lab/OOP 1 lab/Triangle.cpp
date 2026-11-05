@@ -120,3 +120,78 @@ ostream& operator<<(ostream& out, const Triangle& t) {
     return out;
 }
 
+
+
+double Triangle::area()const {
+    return (base * height) / 2.0;
+}
+
+void Triangle::vozvrash(int index, double& outX, double& outY) {
+    if (index == 0) {
+        outX = x + base / 2.0;
+        outY = y;
+
+    }
+    else if (index == 1) {
+        outX = x + base;
+        outY = y + height;
+    }
+    else if (index == 2) {
+        outX = x;
+        outY = y + height;
+    }
+    else {
+        outX = 0;
+        outY = 0;
+    }
+}
+double Triangle::perimatr()const {
+    return base + 2.0 * sideLength();
+}
+
+
+// Нахождение длины стороны (0 - основание/снизу, 1 - правая, 2 - левая)
+double Triangle::getSideLength(int index) const {
+    if (index == 0) {
+        return base; // Снизу
+    }
+    else if (index == 1 || index == 2) {
+        return sideLength(); // Правая и левая стороны
+    }
+    return 0.0; // Если индекс неверный
+}
+
+
+
+
+// Возврат координат заданной вершины
+// 0 - верхняя, 1 - правая, 2 - левая
+void Triangle::getVertex(int index, double& outX, double& outY) const {
+    if (index == 0) {
+        // Верхняя вершина
+        outX = x + base / 2.0;
+        outY = y;
+    }
+    else if (index == 1) {
+        // Правая нижняя вершина
+        outX = x + base;
+        outY = y + height;
+    }
+    else if (index == 2) {
+        // Левая нижняя вершина
+        outX = x;
+        outY = y + height;
+    }
+    else {
+        // Если передан неверный индекс
+        outX = 0;
+        outY = 0;
+    }
+}
+
+double Triangle::ploshod()const {
+    return (base * height) / 2.0;
+}
+
+
+

@@ -1,205 +1,182 @@
-#define NOMINMAX
-#include <windows.h>
 #include <iostream>
+#include <fstream>
 #include <string>
-#include <vector>
-#include <algorithm>
-#include <limits>
+#include <random>
+#include <chrono>
+using namespace std;
 
-// ============================================================
-//  КЛАСС BoyerMoore
-// ============================================================
-class BoyerMoore {
-public:
-    explicit BoyerMoore(const std::string& pattern)
-        : pattern_(pattern), m_(static_cast<int>(pattern.size()))
-    {
-        buildBadChar();
+// ==========================================================
+// 1. ПРОВЕРКА УПОРЯДОЧЕННОСТИ
+// ==========================================================
+bool isSorted(int arr[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        if (arr[i] > arr[i + 1]) return false;
     }
+    return true;
+}
 
-    // 1. Первое вхождение (переписано по блок-схеме)
-    int findFirst(const std::string& text) const {
-        int n = static_cast<int>(text.size());
-        if (m_ == 0) return 0;
-        if (m_ > n)  return -1;
-
-        // Блок на схеме: i = m-1, j = m-1
-        int i = m_ - 1;
-        int j = m_ - 1;
-        int k = 0;
-
-        while (true) {
-            // Ромб на схеме: i < n ?
-            if (i < n) {
-                // Ромб на схеме: j >= 0 ?
-                if (j >= 0) {
-                    // Прямоугольник на схеме: k = i, j = m-1
-                    k = i;
-                    j = m_ - 1;
-
-                    // Внутренний цикл сравнения (ромб S[k] == P[j])
-                    while (true) {
-                        // Ромб на схеме: j >= 0 ?
-                        if (j >= 0) {
-                            // Ромб на схеме: S[k] == P[j] ?
-                            if (text[k] == pattern_[j]) {
-                                // Стрелка "+" на схеме: j--, k--
-                                --j;
-                                --k;
-                                // Возврат к проверке j >= 0
-                            }
-                            else {
-                                // Стрелка "-" (не совпало) -> выход из внутреннего цикла
-                                break;
-                            }
-                        }
-                        else {
-                            // Стрелка "-" (j < 0) -> НАШЛИ (красная стрелка)
-                            return i - m_ + 1;
-                        }
-                    }
+// ==========================================================
+// 2. СОРТИРОВКА ШЕЛЛА
+// ==========================================================
+void shellSort(int arr[], int n, int steps[], int t) {
+    for (int i = 0; i < t; i++) {
+        int s = steps[i];
+        for (int b = 0; b < s; b++) {
+            int j = b + s;
+            while (j < n) {
+                int x = arr[j];
+                int k = j - s;
+                while (k >= 0 && arr[k] > x) {
+                    arr[k + s] = arr[k];
+                    k = k - s;
                 }
-                else {
-                    // Стрелка "-" от верхнего ромба j >= 0
-                    // На схеме: i = i + 1 - m
-                    i = i + 1 - m_;
-                }
-            }
-            else {
-                // Стрелка "-" от ромба i < n (не найдено)
-                return -1;
-            }
-
-            // Блок сдвига (нижний прямоугольник на схеме)
-            // i = i + T[S[i]], j = m-1
-            i += badCharShift(text[i], m_ - 1);
-            j = m_ - 1;
-        }
-    }
-
-    // 2. Все вхождения
-    std::vector<int> findAll(const std::string& text) const {
-        return findInRange(text, 0, static_cast<int>(text.size()) - 1);
-    }
-
-    // 3. Вхождения в диапазоне [from, to]
-    std::vector<int> findInRange(const std::string& text, int from, int to) const {
-        std::vector<int> result;
-        int n = static_cast<int>(text.size());
-
-        if (m_ == 0) {
-            for (int i = std::max(0, from); i <= std::min(to, n); ++i)
-                result.push_back(i);
-            return result;
-        }
-
-        if (from < 0) from = 0;
-        if (to >= n)  to = n - 1;
-        if (from > to || m_ > to - from + 1) return result;
-
-        int limit = to - m_ + 1;
-        int shift = from;
-
-        while (shift <= limit) {
-            int j = m_ - 1;
-            while (j >= 0 && pattern_[j] == text[shift + j])
-                --j;
-
-            if (j < 0) {
-                result.push_back(shift);
-                shift += std::max(1, badCharShift(text[shift + m_ - 1], m_ - 1));
-            }
-            else {
-                shift += std::max(1, badCharShift(text[shift + j], j));
+                arr[k + s] = x;
+                j = j + s;
             }
         }
-        return result;
-    }
-
-private:
-    std::string pattern_;
-    int m_;
-    int badChar_[256];
-
-    void buildBadChar() {
-        for (int i = 0; i < 256; ++i)
-            badChar_[i] = m_;
-        for (int i = 0; i < m_; ++i)
-            badChar_[static_cast<unsigned char>(pattern_[i])] = m_ - 1 - i;
-    }
-
-    int badCharShift(char c, int j) const {
-        int last = badChar_[static_cast<unsigned char>(c)];
-        return j - (m_ - 1 - last);
-    }
-};
-
-// ============================================================
-//  ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ВВОДА
-// ============================================================
-static int readInt(const std::string& prompt) {
-    int value;
-    while (true) {
-        std::cout << prompt;
-        if (std::cin >> value) {
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            return value;
-        }
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        std::cout << "Ошибка: введите целое число.\n";
     }
 }
 
-static std::string readLine(const std::string& prompt) {
-    std::string s;
-    std::cout << prompt;
-    std::getline(std::cin, s);
-    return s;
+// ==========================================================
+// 3. МЕТОДЫ ГЕНЕРАЦИИ ШАГОВ
+// ==========================================================
+int getShellSteps(int n, int steps[]) {
+    int count = 0;
+    for (int h = n / 2; h > 0; h = h / 2) { steps[count++] = h; }
+    return count;
 }
 
-// ============================================================
-//  MAIN
-// ============================================================
+int getKnuthSteps(int n, int steps[]) {
+    int h = 1;
+    while (h < n / 3) h = 3 * h + 1;
+    int count = 0;
+    while (h > 0) {
+        steps[count++] = h;
+        h = (h - 1) / 3;
+    }
+    return count;
+}
+
+int getHibbardSteps(int n, int steps[]) {
+    int count = 0;
+    int h = 1;
+    while (h < n) {
+        steps[count++] = h;
+        h = h * 2 + 1;
+    }
+    for (int i = 0; i < count / 2; i++) {
+        int temp = steps[i];
+        steps[i] = steps[count - 1 - i];
+        steps[count - 1 - i] = temp;
+    }
+    return count;
+}
+
+// ==========================================================
+// 4. СОХРАНЕНИЕ И ЧТЕНИЕ
+// ==========================================================
+void saveArrayToFile(int arr[], int size, string filename) {
+    ofstream file(filename);
+    if (!file.is_open()) return;
+    file << size << endl;
+    for (int i = 0; i < size; i++) file << arr[i] << " ";
+    file.close();
+}
+
+void loadArrayFromFile(int arr[], string filename) {
+    ifstream file(filename);
+    if (!file.is_open()) return;
+    int size;
+    file >> size;
+    for (int i = 0; i < size; i++) file >> arr[i];
+    file.close();
+}
+
+// ==========================================================
+// 5. ФУНКЦИЯ ЗАМЕРА ВРЕМЕНИ (возвращает среднее время)
+// ==========================================================
+double getAverageTime(int size, string filename, int method) {
+    int steps[50];
+    int stepsCount = 0;
+    int* workArr = new int[size];
+
+    if (method == 1) stepsCount = getShellSteps(size, steps);
+    else if (method == 2) stepsCount = getKnuthSteps(size, steps);
+    else stepsCount = getHibbardSteps(size, steps);
+
+    double totalTime = 0.0;
+    for (int run = 1; run <= 3; run++) {
+        loadArrayFromFile(workArr, filename);
+
+        auto start = chrono::high_resolution_clock::now();
+        shellSort(workArr, size, steps, stepsCount);
+        auto end = chrono::high_resolution_clock::now();
+
+        chrono::duration<double, milli> elapsed = end - start;
+        totalTime += elapsed.count();
+    }
+
+    if (!isSorted(workArr, size)) {
+        cout << "ОШИБКА СОРТИРОВКИ!" << endl;
+    }
+
+    delete[] workArr;
+    return totalTime / 3.0; // Возвращаем среднее
+}
+
+// ==========================================================
+// 6. ГЛАВНАЯ ФУНКЦИЯ
+// ==========================================================
 int main() {
-   
+    int sizes[] = { 10000, 100000, 1000000 };
+    int mins[] = { -10, -1000, -100000 };
+    int maxs[] = { 10, 1000, 100000 };
 
-    std::cout << "===== Алгоритм Бойера-Мура =====\n\n";
 
-    std::string text = readLine("Введите текст: ");
-    std::string pattern = readLine("Введите искомую подстроку: ");
 
-    if (pattern.empty()) {
-        std::cout << "Подстрока пустая — поиск невозможен.\n";
-        return 0;
+    // Генерируем 9 файлов (один раз)
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            int* originalArr = new int[sizes[i]];
+            random_device rd;
+            mt19937 gen(rd());
+            uniform_int_distribution<int> dist(mins[j], maxs[j]);
+            for (int k = 0; k < sizes[i]; k++) originalArr[k] = dist(gen);
+
+            string filename = "array_" + to_string(sizes[i]) + "_" + to_string(mins[j]) + "_" + to_string(maxs[j]) + ".txt";
+            saveArrayToFile(originalArr, sizes[i], filename);
+            delete[] originalArr;
+        }
     }
 
-    BoyerMoore bm(pattern);
+  
 
-    // 1. Первое вхождение
-    int first = bm.findFirst(text);
-    if (first == -1)
-        std::cout << "\n[1] Первое вхождение: не найдено\n";
-    else
-        std::cout << "\n[1] Первое вхождение: индекс " << first << '\n';
+    // Шапка таблицы
+    cout << "Размер\t| Диапазон\t\t|  Шелл (мс)\t        |   Кнут (мс)\t        | Хиббард (мс)" << endl;
+    cout << "-----------------------------------------------------------------------------------------" << endl;
 
-    // 2. Все вхождения
-    auto all = bm.findAll(text);
-    std::cout << "[2] Все вхождения (" << all.size() << " шт.): ";
-    if (all.empty()) std::cout << "нет";
-    else for (int p : all) std::cout << p << ' ';
-    std::cout << '\n';
+    // ВЫВОДИМ РОВНО 9 СТРОК
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
 
-    // 3. Вхождения в диапазоне
-    std::cout << "\n[3] Поиск в диапазоне\n";
-    int from = readInt("    Начало диапазона (индекс): ");
-    int to = readInt("    Конец диапазона (индекс): ");
+            int currentSize = sizes[i];
+            int currentMin = mins[j];
+            int currentMax = maxs[j];
+            string filename = "array_" + to_string(currentSize) + "_" + to_string(currentMin) + "_" + to_string(currentMax) + ".txt";
 
-    auto range = bm.findInRange(text, from, to);
-    std::cout << "[3] Вхождения в [" << from << ".." << to << "]: ";
-    if (range.empty()) std::cout << "нет";
-    else for (int p : range) std::cout << p << ' ';
-    std::cout << '\n';
+            // Замеряем все три метода по очереди
+            double tShell = getAverageTime(currentSize, filename, 1);
+            double tKnuth = getAverageTime(currentSize, filename, 2);
+            double tHibbard = getAverageTime(currentSize, filename, 3);
 
+            // Выводим одну строчку
+            cout << currentSize << "\t| [" << currentMin << "; " << currentMax << "]\t\t| "
+                << tShell << "\t\t| "
+                << tKnuth << "\t\t| "
+                << tHibbard << endl;
+        }
+    }
+
+    cout << "\nВсе тесты завершены!" << endl;
     return 0;
 }

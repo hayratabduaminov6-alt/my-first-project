@@ -7,23 +7,88 @@
 
 using namespace std;
 
+
+
 int main() {
+    int n;
+    cout << "Введите треуголники ";
+    cin >> n;
+    // 1. Массив треугольников
+    Triangle* arr = new Triangle[n];
+
+    // 2. ТРИ динамических массива (используем твой класс Triangle для хранения точек)
+    Triangle* v0 = new Triangle[n];
+    Triangle* v1 = new Triangle[n];
+    Triangle* v2 = new Triangle[n];
+
+    for (int i = 0; i < n; i++) {
+        cin >> arr[i];
+
+        double vx, vy; // Временные переменные для функции vozvrash
+
+        // Заполняем первый массив (верхние вершины)
+        arr[i].vozvrash(0, vx, vy);
+        v0[i].setX(vx);
+        v0[i].setY(vy);
+
+        // Заполняем второй массив (правые вершины)
+        arr[i].vozvrash(1, vx, vy);
+        v1[i].setX(vx);
+        v1[i].setY(vy);
+
+        // Заполняем третий массив (левые вершины)
+        arr[i].vozvrash(2, vx, vy);
+        v2[i].setX(vx);
+        v2[i].setY(vy);
+    }
+
+    // 3. Поиск максимальной площади
+    int maxIdx = 0;
+    for (int i = 1; i < n; i++) {
+        if (arr[i].ploshod() > arr[maxIdx].ploshod()) {
+            maxIdx = i;
+        }
+    }
+
+    // 4. Вывод
+    cout << "\nМаксимальная площадь у: " << arr[maxIdx] << endl;
+    cout << "Вершина 1 (Верх): (" << v0[maxIdx].getX() << ", " << v0[maxIdx].getY() << ")" << endl;
+    cout << "Вершина 2 (Право): (" << v1[maxIdx].getX() << ", " << v1[maxIdx].getY() << ")" << endl;
+    cout << "Вершина 3 (Лево): (" << v2[maxIdx].getX() << ", " << v2[maxIdx].getY() << ")" << endl;
+
+    // 5. Очистка
+    delete[] arr;
+    delete[] v0;
+    delete[] v1;
+    delete[] v2;
+
+
+    // Вычисляем и выводим три вершины
+    double x = arr[maxIdx].getX();
+    double y = arr[maxIdx].getY();
+    double b = arr[maxIdx].getBase();
+    double h = arr[maxIdx].getHeight();
+
+    cout << "Вершина 1 (Верх): " << x + b / 2 << ", " << y << endl;
+    cout << "Вершина 2 (Лево): " << x << ", " << y + h << endl;
+    cout << "Вершина 3 (Право): " << x + b << ", " << y + h << endl;
+
+    // 5. Очищаем память
+    delete[] arr;
+ 
 
 
 
+  
 
 
-
+  
+    
 
     // ===== 1) КОНСТРУКТОРЫ =====
     cout << "1) Конструктор по умолчанию: ";
     Triangle t1;
     cout << t1 << endl;
-
-    
-
-
-
     cout << "1) Конструктор с аргументами: ";
     Triangle t2(0, 0, 4, 3);
     cout << t2 << endl << endl;
@@ -91,6 +156,38 @@ int main() {
     // Прямая x + y - 3 = 0 (проходит через L=(0,3))
     cout << "12) Прямая x+y-3=0 пересекает t2? "
         << (t2.intersectsLine(1, 1, -3) ? "да" : "нет") << endl;
+    
+
+  
+
+
+    // Считаем периметр (проверь, чтобы в .h было написано точно так же!)
+    cout << "Периматр:" << t2.perimatr() << endl;
+
+    // Получаем длины сторон по индексам (вызываем Dlina, а не getSideLength)
+    cout << "Сторона 0 (снизу/основание): " << t2.getSideLength(0) << endl;
+    cout << "Сторона 1 (правая): " << t2.getSideLength(1) << endl;
+    cout << "Сторона 2 (левая): " << t2.getSideLength(2) << endl << endl;
+
+    double vx, vy;
+
+    // Вызываем vozvrash, а не getVertex
+    t2.vozvrash(0, vx, vy);
+    cout << "Верхняя вершина (0): " << vx << ", " << vy << endl ;
+
+    t2.vozvrash(1, vx, vy);
+    cout << "Правая вершина (1): " << vx << ", " << vy << endl;
+
+    t2.vozvrash(2, vx, vy);
+    cout << "Левая вершина (2): " << vx << ", " << vy << endl;
+    
+
+   
+
+
+
+
+
 
     return 0;
 }
