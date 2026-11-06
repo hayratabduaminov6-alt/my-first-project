@@ -123,20 +123,22 @@ int main() {
     
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
+            
             string filename = "array_" + to_string(sizes[i]) + "_" + to_string(mins[j]) + "_" + to_string(maxs[j]) + ".txt";
 
-            ifstream testFile(filename);
-            if (!testFile.is_open()) {
-              
-                cout << "ОШИБКА: Файл " << filename << " не найден!" << endl;
-               
+          
+            ifstream check(filename);
+
+            
+            if (!check) {
+                cout << "Нет файла: " << filename << endl;
                 return 1; 
             }
-            testFile.close();
+
+            check.close();
         }
     }
-   
-
+    
    
 
     cout << "Размер\t| Диапазон\t\t|  Шелл (мс)\t        |   Кнут (мс)\t        | Хиббард (мс)" << endl;
