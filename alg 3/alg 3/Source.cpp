@@ -129,7 +129,7 @@ int main() {
             if (!testFile.is_open()) {
               
                 cout << "ОШИБКА: Файл " << filename << " не найден!" << endl;
-                cout << "Убедитесь, что все 9 файлов лежат в папке с программой." << endl;
+               
                 return 1; 
             }
             testFile.close();
