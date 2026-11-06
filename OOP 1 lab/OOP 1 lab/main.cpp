@@ -11,72 +11,50 @@ using namespace std;
 
 int main() {
     int n;
-    cout << "Введите треуголники ";
+    cout << " Количество треуголника ";
     cin >> n;
-    // 1. Массив треугольников
-    Triangle* arr = new Triangle[n];
 
-    // 2. ТРИ динамических массива (используем твой класс Triangle для хранения точек)
+
+
+    Triangle* arr = new Triangle[n];
     Triangle* v0 = new Triangle[n];
     Triangle* v1 = new Triangle[n];
     Triangle* v2 = new Triangle[n];
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0;i < n;i++) {
         cin >> arr[i];
 
-        double vx, vy; // Временные переменные для функции vozvrash
 
-        // Заполняем первый массив (верхние вершины)
-        arr[i].vozvrash(0, vx, vy);
-        v0[i].setX(vx);
-        v0[i].setY(vy);
+        double x = arr[i].getX();
+        double y = arr[i].getY();
+        double b = arr[i].getBase();
+        double h = arr[i].getHeight();
 
-        // Заполняем второй массив (правые вершины)
-        arr[i].vozvrash(1, vx, vy);
-        v1[i].setX(vx);
-        v1[i].setY(vy);
+        v0[i].setX(x + b / 2.0);
+        v0[i].setY(y);
 
-        // Заполняем третий массив (левые вершины)
-        arr[i].vozvrash(2, vx, vy);
-        v2[i].setX(vx);
-        v2[i].setY(vy);
+        v1[i].setX(x + b);
+        v1[i].setY(y + h);
+
+
+        v2[i].setX(x);
+        v2[i].setY(y + h);
+
     }
 
-    // 3. Поиск максимальной площади
-    int maxIdx = 0;
-    for (int i = 1; i < n; i++) {
-        if (arr[i].ploshod() > arr[maxIdx].ploshod()) {
-            maxIdx = i;
+
+    int minplos =0 ;
+    for (int i = 1; i < n;i++) {
+        if (arr[i].ploshod() < arr[minplos].ploshod()) {
+            minplos = i;
         }
     }
 
-    // 4. Вывод
-    cout << "\nМаксимальная площадь у: " << arr[maxIdx] << endl;
-    cout << "Вершина 1 (Верх): (" << v0[maxIdx].getX() << ", " << v0[maxIdx].getY() << ")" << endl;
-    cout << "Вершина 2 (Право): (" << v1[maxIdx].getX() << ", " << v1[maxIdx].getY() << ")" << endl;
-    cout << "Вершина 3 (Лево): (" << v2[maxIdx].getX() << ", " << v2[maxIdx].getY() << ")" << endl;
 
-    // 5. Очистка
-    delete[] arr;
-    delete[] v0;
-    delete[] v1;
-    delete[] v2;
+    cout << " Минималная площад" << arr[minplos] << endl;
 
-
-    // Вычисляем и выводим три вершины
-    double x = arr[maxIdx].getX();
-    double y = arr[maxIdx].getY();
-    double b = arr[maxIdx].getBase();
-    double h = arr[maxIdx].getHeight();
-
-    cout << "Вершина 1 (Верх): " << x + b / 2 << ", " << y << endl;
-    cout << "Вершина 2 (Лево): " << x << ", " << y + h << endl;
-    cout << "Вершина 3 (Право): " << x + b << ", " << y + h << endl;
-
-    // 5. Очищаем память
-    delete[] arr;
- 
-
+       
+    
 
 
   

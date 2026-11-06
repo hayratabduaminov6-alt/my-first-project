@@ -111,7 +111,7 @@ double getAverageTime(int size, string filename, int method) {
     }
 
     delete[] workArr;
-    return totalTime / 3.0; 
+    return totalTime / 3.0;
 }
 
 
@@ -120,30 +120,29 @@ int main() {
     int mins[] = { -10, -1000, -100000 };
     int maxs[] = { 10, 1000, 100000 };
 
-
-
-    // Генерируем 9 файлов (один раз)
+    
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            int* originalArr = new int[sizes[i]];
-            random_device rd;
-            mt19937 gen(rd());
-            uniform_int_distribution<int> dist(mins[j], maxs[j]);
-            for (int k = 0; k < sizes[i]; k++) originalArr[k] = dist(gen);
-
             string filename = "array_" + to_string(sizes[i]) + "_" + to_string(mins[j]) + "_" + to_string(maxs[j]) + ".txt";
-            saveArrayToFile(originalArr, sizes[i], filename);
-            delete[] originalArr;
+
+            ifstream testFile(filename);
+            if (!testFile.is_open()) {
+              
+                cout << "ОШИБКА: Файл " << filename << " не найден!" << endl;
+                cout << "Убедитесь, что все 9 файлов лежат в папке с программой." << endl;
+                return 1; 
+            }
+            testFile.close();
         }
     }
-
-
+   
 
    
+
     cout << "Размер\t| Диапазон\t\t|  Шелл (мс)\t        |   Кнут (мс)\t        | Хиббард (мс)" << endl;
     cout << "-----------------------------------------------------------------------------------------" << endl;
 
-    
+
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
 
@@ -152,12 +151,12 @@ int main() {
             int currentMax = maxs[j];
             string filename = "array_" + to_string(currentSize) + "_" + to_string(currentMin) + "_" + to_string(currentMax) + ".txt";
 
-            
+
             double tShell = getAverageTime(currentSize, filename, 1);
             double tKnuth = getAverageTime(currentSize, filename, 2);
             double tHibbard = getAverageTime(currentSize, filename, 3);
 
-            
+
             cout << currentSize << "\t| [" << currentMin << "; " << currentMax << "]\t\t| "
                 << tShell << "\t\t| "
                 << tKnuth << "\t\t| "
@@ -165,6 +164,6 @@ int main() {
         }
     }
 
-    
+
     return 0;
 }
