@@ -10,6 +10,13 @@ using namespace std;
 
 
 int main() {
+
+
+
+  
+
+    
+
     int n;
     cout << " Количество треуголника ";
     cin >> n;
@@ -43,25 +50,34 @@ int main() {
     }
 
 
-    int minplos =0 ;
+    int minplos = 0;
     for (int i = 1; i < n;i++) {
-        if (arr[i].ploshod() < arr[minplos].ploshod()) {
+       
+        if (arr[i].ploshad() < arr[minplos].ploshad()) {
             minplos = i;
         }
     }
-
-
-    cout << " Минималная площад" << arr[minplos] << endl;
-
-       
     
-
-
-  
-
-
-  
     
+    cout << " Минимальная  площад" << arr[minplos] << endl;
+    cout << " Минимальная  площад" << arr[minplos].ploshad() << endl;
+
+
+   
+
+
+
+
+
+
+    delete[] arr;
+    delete[] v0;
+    delete[] v1;
+    delete[] v2;
+
+
+
+
 
     // ===== 1) КОНСТРУКТОРЫ =====
     cout << "1) Конструктор по умолчанию: ";
@@ -142,10 +158,7 @@ int main() {
     // Считаем периметр (проверь, чтобы в .h было написано точно так же!)
     cout << "Периматр:" << t2.perimatr() << endl;
 
-    // Получаем длины сторон по индексам (вызываем Dlina, а не getSideLength)
-    cout << "Сторона 0 (снизу/основание): " << t2.getSideLength(0) << endl;
-    cout << "Сторона 1 (правая): " << t2.getSideLength(1) << endl;
-    cout << "Сторона 2 (левая): " << t2.getSideLength(2) << endl << endl;
+   
 
     double vx, vy;
 

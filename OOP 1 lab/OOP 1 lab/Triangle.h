@@ -49,15 +49,16 @@ public:
     // 9) Подобие как операция ==
     bool operator==(const Triangle& other) const;
 
-    
+    double ploshad() const;
 
-    // Периметр треугольника
     double perimatr()const;
 
-    // Длина стороны по индексу (0 - основание, 1 - правая, 2 - левая)
-    double getSideLength(int index) const;
+    
+    double Dlina()const; 
+    
+   
+       
 
-    double ploshod()const;
     
 
     // 11) Высота, опущенная на боковую сторону
@@ -66,11 +67,13 @@ public:
     // 12) Пересечение с прямой Ax + By + C = 0
     bool intersectsLine(double A, double B, double C) const;
 
-    double area()const;
+   
     void vozvrash(int index, double& outX, double& outY);
 
-    // Получение координат вершины (0 - верх, 1 - право, 2 - лево)
-    void getVertex(int index, double& outX, double& outY) const;
+
+  
+
+
 
 };
 // 2) Ввод/вывод
