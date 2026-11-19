@@ -47,6 +47,27 @@ public:
     // 10. Удаление по значению
     bool removeByValue(T value);
 
+    // 11. Удаление всех с заданным значением
+    bool removeAllByValue(T value);
+
+    // 12. Минимум и максимум
+    T findMin() const;
+    T findMax() const;
+
+    // 14. Итераторы
+    typedef T* iterator;
+    typedef const T* const_iterator;
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+
+    // 15. Вставка перед итератором
+    iterator insert(iterator pos, T value);
+
+    // 16. Удаление по итератору
+    iterator erase(iterator pos);
+
     // Вспомогательный метод
     void add(T value);
 

@@ -29,8 +29,10 @@ int main()
 
     cout << "\n=== 5. Поиск элемента ===" << endl;
     DynamicArray<int> search;
-    search.insertAt(search.getSize(), 10); search.insertAt(search.getSize(), 20);
-    search.insertAt(search.getSize(), 30); search.insertAt(search.getSize(), 20);
+    search.insertAt(search.getSize(), 10);
+    search.insertAt(search.getSize(), 20);
+    search.insertAt(search.getSize(), 30);
+    search.insertAt(search.getSize(), 20);
     search.insertAt(search.getSize(), 50);
     cout << "Массив: " << search << endl;
     cout << "Индекс элемента 20 = " << search.indexOf(20) << endl;
@@ -73,6 +75,53 @@ int main()
     cout << "Исходный массив: " << b << endl;
     cout << "Удаление первого вхождения 20: " << b.removeByValue(20) << " -> " << b << endl;
     cout << "Удаление 999 (нет такого):     " << b.removeByValue(999) << " -> " << b << endl;
+
+    cout << "\n=== 11. Удаление всех с заданным значением ===" << endl;
+    int rawAll[7] = { 10, 20, 30, 20, 50, 20, 60 };
+    DynamicArray<int> all(rawAll, 7);
+    cout << "Исходный массив: " << all << endl;
+    cout << "Удаление всех вхождений 20: " << all.removeAllByValue(20) << " -> " << all << endl;
+
+    cout << "\n=== 12. Поиск минимума и максимума ===" << endl;
+    DynamicArray<int> mm;
+    mm.insertAt(mm.getSize(), 42); mm.insertAt(mm.getSize(), 7);
+    mm.insertAt(mm.getSize(), 99); mm.insertAt(mm.getSize(), 13);
+    mm.insertAt(mm.getSize(), 56);
+    cout << "Массив: " << mm << endl;
+    cout << "Минимальный элемент = " << mm.findMin() << endl;
+    cout << "Максимальный элемент = " << mm.findMax() << endl;
+
+    cout << "\n=== 14. Итераторы begin / end ===" << endl;
+    DynamicArray<int> itArr;
+    itArr.insertAt(itArr.getSize(), 10); itArr.insertAt(itArr.getSize(), 20);
+    itArr.insertAt(itArr.getSize(), 30); itArr.insertAt(itArr.getSize(), 40);
+    itArr.insertAt(itArr.getSize(), 50);
+    cout << "Массив: " << itArr << endl;
+    cout << "Проход через итераторы: ";
+    for (DynamicArray<int>::iterator it = itArr.begin(); it != itArr.end(); ++it)
+        cout << *it << " ";
+    cout << endl;
+
+    cout << "\n=== 15. Вставка перед итератором ===" << endl;
+    DynamicArray<int> insIt;
+    insIt.insertAt(0, 10); insIt.insertAt(1, 20); insIt.insertAt(2, 30);
+    cout << "Исходный массив: " << insIt << endl;
+    insIt.insert(insIt.begin() + 1, 15);
+    cout << "Вставка 15 перед вторым элементом: " << insIt << endl;
+    insIt.insert(insIt.begin(), 5);
+    cout << "Вставка 5 в начало:                " << insIt << endl;
+    insIt.insert(insIt.end(), 99);
+    cout << "Вставка 99 в конец:                " << insIt << endl;
+
+    cout << "\n=== 16. Удаление по итератору ===" << endl;
+    DynamicArray<int> er;
+    er.insertAt(0, 10); er.insertAt(1, 20); er.insertAt(2, 30);
+    er.insertAt(3, 40); er.insertAt(4, 50);
+    cout << "Исходный массив: " << er << endl;
+    er.erase(er.begin());
+    cout << "Удаление первого элемента:      " << er << endl;
+    er.erase(er.begin() + 1);
+    cout << "Удаление второго элемента:      " << er << endl;
 
     cout << "\n=== 6. Потоковый ввод ===" << endl;
     DynamicArray<int> inputArr;
