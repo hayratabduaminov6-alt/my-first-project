@@ -36,6 +36,14 @@ DynamicArray<T>::DynamicArray(const DynamicArray& other)
         data[i] = other.data[i];
 }
 
+// Конструктор перемещения
+template <typename T>
+DynamicArray<T>::DynamicArray(DynamicArray&& other) noexcept
+{
+    data = other.data; size = other.size; capacity = other.capacity;
+    other.data = nullptr; other.size = 0; other.capacity = 0;
+}
+
 // 2. Деструктор
 template <typename T>
 DynamicArray<T>::~DynamicArray()
@@ -213,6 +221,66 @@ typename DynamicArray<T>::iterator DynamicArray<T>::erase(iterator pos)
     return data + index;
 }
 
+// 17. Удаление диапазона [first, last)
+template <typename T>
+typename DynamicArray<T>::iterator DynamicArray<T>::erase(iterator first, iterator last)
+{
+    int startIndex = first - data; int endIndex = last - data;
+    if (startIndex < 0 || startIndex > size || endIndex < startIndex || endIndex > size) return data + size;
+    int count = endIndex - startIndex;
+    if (count == 0) return data + startIndex;
+    for (int i = endIndex; i < size; i++) data[i - count] = data[i];
+    size = size - count;
+    if (capacity > 2 && size < capacity / 2)
+    {
+        int newCapacity = capacity / 2; T* newData = new T[newCapacity];
+        for (int i = 0; i < size; i++) newData[i] = data[i];
+        delete[] data; data = newData; capacity = newCapacity;
+    }
+    return data + startIndex;
+}
+
+// 19. Перегрузки
+template <typename T>
+T& DynamicArray<T>::operator[](int index) { return data[index]; }
+template <typename T>
+const T& DynamicArray<T>::operator[](int index) const { return data[index]; }
+
+template <typename T>
+DynamicArray<T>& DynamicArray<T>::operator=(const DynamicArray& other)
+{
+    if (this == &other) return *this;
+    delete[] data; size = other.size; capacity = other.capacity;
+    data = new T[capacity];
+    for (int i = 0; i < size; i++) data[i] = other.data[i];
+    return *this;
+}
+
+template <typename T> DynamicArray<T>& DynamicArray<T>::operator+=(T value) { insertAt(size, value); return *this; }
+template <typename T> DynamicArray<T> DynamicArray<T>::operator+(T value) const { DynamicArray result(*this); result += value; return result; }
+template <typename T> DynamicArray<T>& DynamicArray<T>::operator+=(const DynamicArray& other) { for (int i = 0; i < other.size; i++) insertAt(size, other.data[i]); return *this; }
+template <typename T> DynamicArray<T> DynamicArray<T>::operator+(const DynamicArray& other) const { DynamicArray result(*this); result += other; return result; }
+
+template <typename T>
+DynamicArray<T>& DynamicArray<T>::operator=(DynamicArray&& other) noexcept
+{
+    if (this == &other) return *this;
+    delete[] data; data = other.data; size = other.size; capacity = other.capacity;
+    other.data = nullptr; other.size = 0; other.capacity = 0;
+    return *this;
+}
+
+template <typename T>
+bool DynamicArray<T>::operator==(const DynamicArray& other) const
+{
+    if (size != other.size) return false;
+    for (int i = 0; i < size; i++) if (data[i] != other.data[i]) return false;
+    return true;
+}
+
+template <typename T>
+bool DynamicArray<T>::operator!=(const DynamicArray& other) const { return !(*this == other); }
+
 // Вспомогательный метод
 template <typename T>
 void DynamicArray<T>::add(T value)
@@ -224,38 +292,23 @@ void DynamicArray<T>::add(T value)
         for (int i = 0; i < size; i++) newData[i] = data[i];
         delete[] data; data = newData; capacity = newCapacity;
     }
-    data[size] = value;
-    size++;
+    data[size] = value; size++;
 }
 
 // Потоковый вывод
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const DynamicArray<T>& arr)
 {
-    os << "[";
-    for (int i = 0; i < arr.size; i++)
-    {
-        os << arr.data[i];
-        if (i < arr.size - 1) os << ", ";
-    }
-    os << "]";
-    return os;
+    os << "["; for (int i = 0; i < arr.size; i++) { os << arr.data[i]; if (i < arr.size - 1) os << ", "; }
+    os << "]"; return os;
 }
 
 // Потоковый ввод
 template <typename T>
 std::istream& operator>>(std::istream& is, DynamicArray<T>& arr)
 {
-    int n;
-    std::cout << "Сколько элементов ввести? ";
-    is >> n;
+    int n; std::cout << "Сколько элементов ввести? "; is >> n;
     while (arr.size > 0) arr.removeAt(arr.size - 1);
-    for (int i = 0; i < n; i++)
-    {
-        T value;
-        std::cout << "Элемент " << (i + 1) << ": ";
-        is >> value;
-        arr.insertAt(arr.size, value);
-    }
+    for (int i = 0; i < n; i++) { T value; std::cout << "Элемент " << (i + 1) << ": "; is >> value; arr.insertAt(arr.size, value); }
     return is;
 }

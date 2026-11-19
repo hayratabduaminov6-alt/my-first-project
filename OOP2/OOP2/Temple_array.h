@@ -22,6 +22,7 @@ public:
     DynamicArray();
     DynamicArray(const T* arr, int count);
     DynamicArray(const DynamicArray& other);
+    DynamicArray(DynamicArray&& other) noexcept; // Перемещение
 
     // 2. Деструктор
     ~DynamicArray();
@@ -67,6 +68,21 @@ public:
 
     // 16. Удаление по итератору
     iterator erase(iterator pos);
+
+    // 17. Удаление диапазона [first, last)
+    iterator erase(iterator first, iterator last);
+
+    // 19. Перегрузки операторов
+    T& operator[](int index);
+    const T& operator[](int index) const;
+    DynamicArray& operator=(const DynamicArray& other);
+    DynamicArray& operator+=(T value);
+    DynamicArray operator+(T value) const;
+    DynamicArray& operator+=(const DynamicArray& other);
+    DynamicArray operator+(const DynamicArray& other) const;
+    DynamicArray& operator=(DynamicArray&& other) noexcept;
+    bool operator==(const DynamicArray& other) const;
+    bool operator!=(const DynamicArray& other) const;
 
     // Вспомогательный метод
     void add(T value);

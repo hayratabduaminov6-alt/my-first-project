@@ -1,4 +1,5 @@
 #include <iostream>
+#include <utility>
 #include "Temple_array.h"
 using namespace std;
 
@@ -13,8 +14,7 @@ int main()
     DynamicArray<int> copy(fromArr);
     cout << "Копия массива:                " << copy << endl;
 
-    cout << "\n=== 2. Деструктор (вызывается автоматически) ===" << endl;
-
+   
     cout << "\n=== 3. Получение размера ===" << endl;
     cout << "Размер массива = " << fromArr.getSize() << endl;
 
@@ -122,6 +122,85 @@ int main()
     cout << "Удаление первого элемента:      " << er << endl;
     er.erase(er.begin() + 1);
     cout << "Удаление второго элемента:      " << er << endl;
+
+    cout << "\n=== 17. Удаление диапазона [first, last) ===" << endl;
+    DynamicArray<int> erRange;
+    for (int i = 1; i <= 7; i++) erRange.insertAt(erRange.getSize(), i);
+    cout << "Исходный массив: " << erRange << endl;
+    erRange.erase(erRange.begin() + 2, erRange.begin() + 5);
+    cout << "Удаление диапазона [2, 5): " << erRange << endl;
+
+    cout << "\n=== 18. Конструктор перемещения ===" << endl;
+    DynamicArray<int> src;
+    src.insertAt(0, 100); src.insertAt(1, 200); src.insertAt(2, 300); src.insertAt(3, 400);
+    cout << "Исходный массив до перемещения: " << src << endl;
+    DynamicArray<int> dst = std::move(src);
+    cout << "Новый массив после перемещения:  " << dst << endl;
+    cout << "Исходный массив после перемещения: " << src << " (размер = " << src.getSize() << ")" << endl;
+
+    cout << "\n=== 19. Оператор [] — доступ по индексу ===" << endl;
+    DynamicArray<int> idxArr;
+    idxArr.insertAt(0, 10); idxArr.insertAt(1, 20); idxArr.insertAt(2, 30);
+    cout << "Исходный массив: " << idxArr << endl;
+    cout << "Элемент с индексом 0 = " << idxArr[0] << endl;
+    cout << "Элемент с индексом 2 = " << idxArr[2] << endl;
+    idxArr[1] = 99;
+    cout << "После записи idxArr[1] = 99: " << idxArr << endl;
+
+    cout << "\n=== 20. Присваивание копированием ===" << endl;
+    DynamicArray<int> src1;
+    src1.insertAt(0, 1); src1.insertAt(1, 2); src1.insertAt(2, 3);
+    DynamicArray<int> dst1;
+    cout << "До:  исходный = " << src1 << ", копия = " << dst1 << endl;
+    dst1 = src1;
+    cout << "После присваивания:" << endl;
+    cout << "  исходный = " << src1 << endl;
+    cout << "  копия =    " << dst1 << endl;
+    dst1[0] = 100;
+    cout << "После изменения копии:" << endl;
+    cout << "  исходный = " << src1 << " (не изменился)" << endl;
+    cout << "  копия =    " << dst1 << endl;
+
+    cout << "\n=== 21-22. Добавление элемента в конец (+ и +=) ===" << endl;
+    DynamicArray<int> elemArr;
+    elemArr.insertAt(0, 10); elemArr.insertAt(1, 20);
+    cout << "Исходный массив: " << elemArr << endl;
+    elemArr += 30;
+    cout << "После += 30: " << elemArr << endl;
+    DynamicArray<int> newElemArr = elemArr + 40;
+    cout << "Результат elemArr + 40 = " << newElemArr << endl;
+    cout << "Исходный массив не изменился: " << elemArr << endl;
+
+    cout << "\n=== 23-24. Сложение с другим массивом (+ и +=) ===" << endl;
+    DynamicArray<int> cat1; cat1.insertAt(0, 1); cat1.insertAt(1, 2);
+    DynamicArray<int> cat2; cat2.insertAt(0, 3); cat2.insertAt(1, 4); cat2.insertAt(2, 5);
+    cout << "Первый = " << cat1 << ", второй = " << cat2 << endl;
+    DynamicArray<int> catSum = cat1 + cat2;
+    cout << "Результат cat1 + cat2 = " << catSum << endl;
+    cat1 += cat2;
+    cout << "После cat1 += cat2: cat1 = " << cat1 << ", cat2 = " << cat2 << endl;
+
+    cout << "\n=== 25. Присваивание перемещением ===" << endl;
+    DynamicArray<int> moveSrc;
+    moveSrc.insertAt(0, 100); moveSrc.insertAt(1, 200); moveSrc.insertAt(2, 300);
+    DynamicArray<int> moveDst; moveDst.insertAt(0, 1);
+    cout << "До:  исходный = " << moveSrc << ", приёмник = " << moveDst << endl;
+    moveDst = std::move(moveSrc);
+    cout << "После moveDst = std::move(moveSrc):" << endl;
+    cout << "  приёмник = " << moveDst << endl;
+    cout << "  исходный = " << moveSrc << " (размер = " << moveSrc.getSize() << ")" << endl;
+
+    cout << "\n=== 26-27. Сравнение (== и !=) ===" << endl;
+    DynamicArray<int> eq1, eq2, eq3;
+    eq1.insertAt(0, 1); eq1.insertAt(1, 2); eq1.insertAt(2, 3);
+    eq2.insertAt(0, 1); eq2.insertAt(1, 2); eq2.insertAt(2, 3);
+    eq3.insertAt(0, 1); eq3.insertAt(1, 2); eq3.insertAt(2, 99);
+    cout << "Первый =  " << eq1 << endl;
+    cout << "Второй =  " << eq2 << endl;
+    cout << "Третий =  " << eq3 << endl;
+    cout << "Первый == второй?   " << (eq1 == eq2 ? "да" : "нет") << endl;
+    cout << "Первый == третий?   " << (eq1 == eq3 ? "да" : "нет") << endl;
+    cout << "Первый != третий?   " << (eq1 != eq3 ? "да" : "нет") << endl;
 
     cout << "\n=== 6. Потоковый ввод ===" << endl;
     DynamicArray<int> inputArr;
